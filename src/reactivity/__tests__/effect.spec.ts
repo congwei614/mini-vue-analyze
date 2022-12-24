@@ -1,7 +1,7 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2022-12-24 14:46:35
- * @LastEditTime: 2022-12-24 18:01:03
+ * @LastEditTime: 2022-12-24 18:12:54
  */
 import { reactive } from '../reactive'
 import { effect, stop } from '../effect'
@@ -70,6 +70,7 @@ describe('effect', () => {
 		obj.prop = 2
 		expect(dummy).toBe(2)
 		stop(runner)
+		stop(runner) // 多次调用
 		obj.prop = 3
 		expect(dummy).toBe(2)
 
