@@ -1,10 +1,17 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2022-12-24 15:04:40
- * @LastEditTime: 2022-12-24 18:04:28
+ * @LastEditTime: 2022-12-25 14:49:07
  */
 
 import { extend } from '../shared'
+
+let activeEffect
+let shouldTrack
+
+function isTracking() {
+	return shouldTrack && activeEffect !== undefined
+}
 
 class reactiveEffect {
 	#_fn: any // static public
@@ -16,8 +23,15 @@ class reactiveEffect {
 		this.#_fn = fn
 	}
 	run() {
+		if (!this.#_activeClearEffect) {
+			return this.#_fn()
+		}
+		shouldTrack = true
 		activeEffect = this
-		return this.#_fn()
+
+		const result = this.#_fn()
+		shouldTrack = false
+		return result
 	}
 	stop() {
 		if (this.#_activeClearEffect) {
@@ -32,11 +46,13 @@ function clearUpEffect(effect) {
 	effect.deps.forEach((_dep: any) => {
 		_dep.delete(effect)
 	})
+	effect.deps.length = 0
 }
 
 const targetMap = new WeakMap()
 export function track(target, key) {
-	if (!activeEffect) return
+	if (!isTracking()) return
+
 	let depsMap = targetMap.get(target)
 	if (!depsMap) {
 		targetMap.set(target, (depsMap = new Map()))
@@ -46,7 +62,7 @@ export function track(target, key) {
 	if (!dep) {
 		depsMap.set(key, (dep = new Set()))
 	}
-
+	if (dep.has(activeEffect)) return
 	dep.add(activeEffect)
 	activeEffect.deps.push(dep)
 }
@@ -67,7 +83,6 @@ export function trigger(target, key) {
 	})
 }
 
-let activeEffect
 export function effect(fn, option?: any) {
 	const _effect = new reactiveEffect(fn)
 	extend(_effect, option)

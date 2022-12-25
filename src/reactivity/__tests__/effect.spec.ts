@@ -1,7 +1,7 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2022-12-24 14:46:35
- * @LastEditTime: 2022-12-24 18:12:54
+ * @LastEditTime: 2022-12-25 14:29:53
  */
 import { reactive } from '../reactive'
 import { effect, stop } from '../effect'
@@ -91,5 +91,23 @@ describe('effect', () => {
 		)
 		stop(runner)
 		expect(onStop).toBeCalledTimes(1)
+	})
+
+	it('stop prop++', () => {
+		// 停止响应式
+		let dummy
+		const obj = reactive({ prop: 1 })
+		const runner = effect(() => {
+			dummy = obj.prop
+		})
+		obj.prop = 2
+		expect(dummy).toBe(2)
+		stop(runner)
+		stop(runner) // 多次调用
+		obj.prop++ // obj.prop = obj.prop + 1
+		expect(dummy).toBe(2)
+
+		runner()
+		expect(dummy).toBe(3)
 	})
 })
