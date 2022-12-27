@@ -1,7 +1,7 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2022-12-24 15:04:40
- * @LastEditTime: 2022-12-25 14:49:07
+ * @LastEditTime: 2022-12-27 21:11:50
  */
 
 import { extend } from '../shared'
@@ -9,7 +9,7 @@ import { extend } from '../shared'
 let activeEffect
 let shouldTrack
 
-function isTracking() {
+export function isTracking() {
 	return shouldTrack && activeEffect !== undefined
 }
 
@@ -62,6 +62,10 @@ export function track(target, key) {
 	if (!dep) {
 		depsMap.set(key, (dep = new Set()))
 	}
+	trackEffects(dep)
+}
+
+export function trackEffects(dep) {
 	if (dep.has(activeEffect)) return
 	dep.add(activeEffect)
 	activeEffect.deps.push(dep)
@@ -73,7 +77,9 @@ export function trigger(target, key) {
 
 	let dep = depsMap.get(key)
 	if (!dep) return
-
+	triggerEffects(dep)
+}
+export function triggerEffects(dep) {
 	dep.forEach((_effect) => {
 		if (_effect.scheduler) {
 			_effect.scheduler()
