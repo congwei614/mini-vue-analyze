@@ -1,7 +1,7 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2022-12-24 15:04:40
- * @LastEditTime: 2022-12-27 21:11:50
+ * @LastEditTime: 2023-01-07 14:54:55
  */
 
 import { extend } from '../shared'
@@ -13,13 +13,12 @@ export function isTracking() {
 	return shouldTrack && activeEffect !== undefined
 }
 
-class reactiveEffect {
+export class reactiveEffect {
 	#_fn: any // static public
 	#_activeClearEffect = true
-	public scheduler?: Function | undefined // 默认public
 	public onStop?: () => void
 	public deps: any[] = []
-	constructor(fn) {
+	constructor(fn, public scheduler?: Function | undefined) {
 		this.#_fn = fn
 	}
 	run() {
