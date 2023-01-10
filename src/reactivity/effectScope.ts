@@ -1,3 +1,8 @@
+/*
+ * @Author: Mr.Cong Wei
+ * @Date: 2023-01-09 17:39:44
+ * @LastEditTime: 2023-01-10 17:47:05
+ */
 export class EffectScope {
   public effects = [];
   private _actvie = true;
@@ -8,10 +13,14 @@ export class EffectScope {
   }
 
   run(fn) {
-    return fn();
+    if (this._actvie) {
+      return fn();
+    }
   }
 
   stop() {
-    this._actvie = false;
+    if (this._actvie) {
+      this._actvie = false;
+    }
   }
 }

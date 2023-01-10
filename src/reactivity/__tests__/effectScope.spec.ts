@@ -1,9 +1,11 @@
 /*
  * @Author: Mr.Cong Wei
  * @Date: 2023-01-09 17:39:39
- * @LastEditTime: 2023-01-09 18:03:15
+ * @LastEditTime: 2023-01-10 14:48:24
  */
+import { effect } from "../effect";
 import { EffectScope } from "../effectScope";
+import { reactive } from "../reactive";
 
 /*
  * @Author: Mr.Cong Wei
@@ -32,5 +34,20 @@ describe("reactivity/effect/scope", () => {
     expect(scope.active).toBe(true);
     scope.stop();
     expect(scope.active).toBe(false);
+  });
+
+  it("should collect the effects", () => {
+    const scope = new EffectScope();
+    scope.run(() => {
+      let dummy;
+      const counter = reactive({ num: 0 });
+      effect(() => (dummy = counter.num));
+
+      expect(dummy).toBe(0);
+      counter.num = 7;
+      expect(dummy).toBe(7);
+    });
+
+    expect(scope.effects.length).toBe(1);
   });
 });
